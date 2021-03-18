@@ -11,15 +11,16 @@ get_data: py_env_installed
 create_tables:
 	/usr/bin/sqlite3 newsStocksWeather.sqlite < create_articles.sql
 	/usr/bin/sqlite3 newsStocksWeather.sqlite < create_stocks.sql
+	/usr/bin/sqlite3 newsStocksWeather.sqlite < create_weather.sql
 	touch $@
 
 load_data: create_tables get_data
-	#head -1 tesla_stocks.csv > all_stocks.csv
 	tail -n +2 -q *_stocks.csv >> all_stocks.csv
 	/usr/bin/sqlite3 newsStocksWeather.sqlite -cmd ".mode csv" ".import all_stocks.csv stocks"
-	#head -1 tesla_articles.csv > all_articles.csv
 	tail -n +2 -q *_articles.csv >> all_articles.csv
 	/usr/bin/sqlite3 newsStocksWeather.sqlite -cmd ".mode csv" ".import all_articles.csv articles"
+	tail -n +2 -q *_weather.csv >> all_weather.csv
+	/usr/bin/sqlite3 newsStocksWeather.sqlite -cmd ".mode csv" ".import all_weather.csv weather"
 
 nuke:
 	rm create_tables

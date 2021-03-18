@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS stocks (
     symbol TEXT,
-	open FLOAT,
+    open FLOAT,
     high FLOAT,
     low FLOAT,
     close FLOAT,

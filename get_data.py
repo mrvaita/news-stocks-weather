@@ -48,10 +48,10 @@ def to_csv(data, filename):
     logger.info(f"Saved data to: {filename}")
 
 
-def articles_request_params(topic, date):
+def articles(topic, date):
     headers = get_auth_headers(config.NEWSAPI_KEY)    
  
-    params = {
+    request_params = {
         "q": topic,
         "from": date,
         "to": date,
@@ -60,20 +60,36 @@ def articles_request_params(topic, date):
         "pageSize": 10,
     }
     
-    return get_data(config.news_get_everything, headers, params)["articles"]
+    return get_data(config.news_get_everything, headers, request_params)["articles"]
 
 
-def stock_price_request_params(name, date):
+def stock_price(name, date):
 
-    params = {
+    request_params = {
         "symbol": name,
         "apikey": config.ALPHAVANTAGE_KEY,
     }
 
-    stock_price = get_data(config.avant_daily, None, params)["Time Series (Daily)"][date]
+    stock_price = get_data(config.avant_daily, None, request_params)["Time Series (Daily)"][date]
     stock_price["symbol"] = name
     stock_price["transactions_date"] = date
     return stock_price
+
+
+def daily_weather(city_id, start_date, end_date):
+
+    request_params = {
+        "city_id": city_id,
+        "start_date": start_date,
+        "end_date": end_date,
+        "key": config.WEATHERBIT_KEY,
+    }
+
+    daily_weather = get_data(config.weatherbit_hist_daily, None, request_params)
+    weather_data = daily_weather["data"][0]
+    weather_data["city_name"] = daily_weather["city_name"]
+    weather_data["city_id"] = daily_weather["city_id"]
+    return weather_data
 
 
 @timethis
@@ -81,13 +97,17 @@ def main():
     yesterday = datetime.today() - timedelta(1)
     yesterday = yesterday.strftime("%Y-%m-%d")
     for company in config.article_keywords:
-        articles = articles_request_params(company, yesterday)
-        articles = [format_data(config.newsapi_columns, a) for a in articles]
-        to_csv(articles, config.filenames[company])
+        news = articles(company, yesterday)
+        news = [format_data(config.newsapi_columns, a) for a in news]
+        to_csv(news, config.filenames[company])
     for company in config.stock_keywords:
-        stocks = [stock_price_request_params(company, yesterday)]
+        stocks = [stock_price(company, yesterday)]
         stocks = [format_data(config.avant_columns, s) for s in stocks]
         to_csv(stocks, config.filenames[company])
+    for city_id in config.city_ids:
+        weather = [daily_weather(city_id, yesterday, datetime.today().strftime("%Y-%m-%d"))]
+        weather = [format_data(config.weatherbit_columns, w) for w in weather]
+        to_csv(weather, config.filenames[city_id])
 
 
 if __name__ == "__main__":
