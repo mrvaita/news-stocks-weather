@@ -3,6 +3,8 @@ import os
 
 
 logging.basicConfig(
+    filename="news_stocks_weather.log",
+    filemode="w", 
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
