@@ -71,6 +71,8 @@ def stock_price_request_params(name, date):
     }
 
     stock_price = get_data(config.avant_daily, None, params)["Time Series (Daily)"][date]
+    stock_price["symbol"] = name
+    stock_price["transactions_date"] = date
     return stock_price
 
 
