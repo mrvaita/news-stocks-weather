@@ -10,5 +10,5 @@ CREATE TABLE IF NOT EXISTS articles (
 	content TEXT
 );
 
-CREATE INDEX i_published_at
+CREATE INDEX IF NOT EXISTS i_published_at
 ON articles(published_at);

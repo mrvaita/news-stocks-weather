@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS weather (
     snow FLOAT
 );
 
-CREATE INDEX i_acquired_on
+CREATE INDEX IF NOT EXISTS i_acquired_on
 ON weather(acquired_on);

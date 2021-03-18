@@ -9,5 +9,5 @@ CREATE TABLE IF NOT EXISTS stocks (
     transactions_date DATETIME
 );
 
-CREATE INDEX i_transactions_date
+CREATE INDEX IF NOT EXISTS i_transactions_date
 ON stocks(transactions_date);
